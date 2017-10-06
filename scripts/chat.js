@@ -10,7 +10,10 @@ module.exports = (robot) => {
              && !sentSet.has(ts)
             ) {
         const username = res.message.item_user.name;
-        res.send(`${username}ちゃん、すごーい！`);
+
+        if(username != 'serval_bot') {
+          res.send(`${username}ちゃん、すごーい！`);
+        }
 
         if(sentSet.size > 100000) {
           sentSet.clear(); // 10万以上、すごーいしたら一旦クリア
