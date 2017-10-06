@@ -57,10 +57,11 @@ module.exports = (robot) => {
         msg.send(message);
     });
 
-    robot.hear(/悲しい/i, (msg) => {
+    robot.hear(/悲しい|すみません|すいません|ごめんなさい|申し訳ない/i, (msg) => {
         const username = msg.message.user.name;
         const messages = [
           'へーきへーき!　フレンズによって得意なこと違うから!',
+          `${username}ちゃんはすっごい頑張り屋だから、きっとすぐ何が得意か分かるよ！`,
           'みんみー'
         ];
         const message = messages[Math.floor(Math.random() * messages.length)];
