@@ -57,4 +57,15 @@ module.exports = (robot) => {
         msg.send(message);
     });
 
+    robot.hear(/悲しい/i, (msg) => {
+        const username = msg.message.user.name;
+        const messages = [
+          'へーきへーき!　フレンズによって得意なこと違うから!',
+          'みんみー'
+        ];
+        const message = messages[Math.floor(Math.random() * messages.length)];
+        msg.send(message);
+    });
+
+
 };
