@@ -79,16 +79,24 @@ module.exports = (robot) => {
         msg.send(message);
     });
 
+    //ネガティブなレスをすると慰めてくれる
     robot.hear(/悲しい|すみません|すいません|ごめんなさい|申し訳ない/i, (msg) => {
         const username = msg.message.user.name;
         const messages = [
           'へーきへーき!　フレンズによって得意なこと違うから!',
-          `${username}ちゃんはすっごい頑張り屋だから、きっとすぐ何が得意か分かるよ！`,
-          'みんみー'
+          'みんみー',
+          `${username}ちゃんはすっごい頑張り屋だから、きっとすぐ何が得意か分かるよ！`
         ];
         const message = messages[Math.floor(Math.random() * messages.length)];
         msg.send(message);
     });
 
-
+    //部屋に入ったユーザーへの案内
+    robot.enter((msg) => {
+      const username = msg.message.user.name;
+      //チャンネルのIDからチャンネル名を取得
+      const room_name = robot.adapter.client.rtm.dataStore.getChannelGroupOrDMById(msg.envelope.room).name;
+        const message = `がーいど がーいど#${room_name} がーいどー\nいらっしゃい！ ここは #${room_name} だよ！ この辺は私のなわばりなの！\n${username}ちゃんはどこから来たの？ なわばりは？`
+      msg.send(message);
+    });
 };
