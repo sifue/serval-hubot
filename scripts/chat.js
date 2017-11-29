@@ -9,8 +9,7 @@ module.exports = (robot) => {
              && res.message.reaction == '+1'
              && !sentSet.has(ts)
             ) {
-        const username = res.message.item_user.name;
-
+        const username = res.message.item_user.profile.display_name;
         if(username != 'serval_bot') {
           res.send(`${username}ちゃん、すごーい！`);
         }
@@ -24,7 +23,7 @@ module.exports = (robot) => {
 
     // サーバルと呼びかけると答えてくれる
     robot.hear(/サーバル/i, (msg) => {
-        const username = msg.message.user.name;
+        const username = msg.message.user.profile.display_name;
         const messages = [
           `${username}ちゃん、なんだい？`,
           'わーーい！',
@@ -81,7 +80,7 @@ module.exports = (robot) => {
 
     //ネガティブなレスをすると慰めてくれる
     robot.hear(/悲しい|すみません|すいません|ごめんなさい|申し訳ない/i, (msg) => {
-        const username = msg.message.user.name;
+        const username = msg.message.user.profile.display_name;
         const messages = [
           'へーきへーき!　フレンズによって得意なこと違うから!',
           'みんみー',
@@ -93,7 +92,7 @@ module.exports = (robot) => {
 
     //部屋に入ったユーザーへの案内
     robot.enter((msg) => {
-      const username = msg.message.user.name;
+      const username = msg.message.user.profile.display_name;
       //チャンネルのIDからチャンネル名を取得
       const room_name = robot.adapter.client.rtm.dataStore.getChannelGroupOrDMById(msg.envelope.room).name;
         const message = `がーいど がーいど#${room_name} がーいどー\nいらっしゃい！ ここは #${room_name} だよ！ この辺は私のなわばりなの！\n${username}ちゃんはどこから来たの？ なわばりは？`
