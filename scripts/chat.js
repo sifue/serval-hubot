@@ -64,19 +64,20 @@ module.exports = robot => {
                   );
                 }
               }
+
+              // インクリメント後のset更新処理
+              if (markSet.size > 100000) {
+                markSet.clear(); // 10万以上、すごーいしたら一旦クリア
+              }
+              markSet.add(ts);
+
+              if (sentSet.size > 100000) {
+                sentSet.clear(); // 10万以上、すごーいしたら一旦クリア
+              }
+              sentSet.add(keyOfSend);
             });
         });
       }
-
-      if (markSet.size > 100000) {
-        markSet.clear(); // 10万以上、すごーいしたら一旦クリア
-      }
-      markSet.add(ts);
-
-      if (sentSet.size > 100000) {
-        sentSet.clear(); // 10万以上、すごーいしたら一旦クリア
-      }
-      sentSet.add(keyOfSend);
     }
   });
 
