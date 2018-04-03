@@ -31,7 +31,7 @@ module.exports = robot => {
           goodcount
             .increment('goodcount', { where: { userId: userId } })
             .then(() => {
-              const newGoodcount = goodcount.goodcount + 1;
+              const newGoodcount = goodcount.goodcount;
               const displayName = user.slack.profile.display_name;
               if (
                 newGoodcount == 1 ||
