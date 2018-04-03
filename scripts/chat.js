@@ -1,7 +1,10 @@
 'use strict';
 
+const Goodcount = require('../models/goodcount');
+Goodcount.sync();
+
 module.exports = robot => {
-  // :+1: が付くと名前付きで褒めてくれる
+  // :+1: が付くと名前付きで褒めてくれ、いいねの数をカウント
   const sentSet = new Set();
   robot.react(res => {
     const ts = res.message.item.ts;
@@ -10,9 +13,43 @@ module.exports = robot => {
       res.message.reaction == '+1' &&
       !sentSet.has(ts)
     ) {
-      const username = res.message.item_user.profile.display_name;
-      if (username != 'serval_bot') {
-        res.send(`${username}ちゃん、すごーい！`);
+      const userId = res.message.item_user.id;
+      const user = robot.brain.data.users[userId];
+
+      if (userId !== 'U7EADCN6N' && userId !== res.message.user.id) {
+        // ボット自身と自身へのいいねを除外
+        Goodcount.findOrCreate({
+          where: { userId: userId },
+          defaults: {
+            userId: userId,
+            name: user.name,
+            realName: user.real_name,
+            displayName: user.slack.profile.display_name,
+            goodcount: 0
+          }
+        }).spread((goodcount, isCreated) => {
+          goodcount
+            .increment('goodcount', { where: { userId: userId } })
+            .then(() => {
+              const newGoodcount = goodcount.goodcount + 1;
+              const displayName = user.slack.profile.display_name;
+              if (
+                newGoodcount == 1 ||
+                newGoodcount == 10 ||
+                newGoodcount == 100 ||
+                newGoodcount == 1000 ||
+                newGoodcount == 10000
+              ) {
+                res.send(
+                  `${displayName}ちゃん、すごーい！記念すべき ${newGoodcount} 回目のいいねだよ！おめでとー！`
+                );
+              } else {
+                res.send(
+                  `${displayName}ちゃん、すごーい！ ${newGoodcount} 回目のいいねだよ！`
+                );
+              }
+            });
+        });
       }
 
       if (sentSet.size > 100000) {
@@ -84,21 +121,21 @@ module.exports = robot => {
     const username = msg.message.user.profile.display_name;
     const messages = [
       'へーきへーき!　フレンズによって得意なこと違うから!',
-      'みんみー',
       `${username}ちゃんはすっごい頑張り屋だから、きっとすぐ何が得意か分かるよ！`
     ];
     const message = messages[Math.floor(Math.random() * messages.length)];
     msg.send(message);
   });
 
+  //新しいユーザーが増えるので一時的にコメントアウト
   //部屋に入ったユーザーへの案内
-  robot.enter(msg => {
-    const username = msg.message.user.profile.display_name;
-    //チャンネルのIDからチャンネル名を取得
-    const room_name = robot.adapter.client.rtm.dataStore.getChannelGroupOrDMById(
-      msg.envelope.room
-    ).name;
-    const message = `がーいど がーいど#${room_name} がーいどー\nいらっしゃい！ ここは #${room_name} だよ！ この辺は私のなわばりなの！\n${username}ちゃんはどこから来たの？ なわばりは？`;
-    msg.send(message);
-  });
+  // robot.enter(msg => {
+  //   const username = msg.message.user.profile.display_name;
+  //   //チャンネルのIDからチャンネル名を取得
+  //   const room_name = robot.adapter.client.rtm.dataStore.getChannelGroupOrDMById(
+  //     msg.envelope.room
+  //   ).name;
+  //   const message = `がーいど がーいど#${room_name} がーいどー\nいらっしゃい！ ここは #${room_name} だよ！ この辺は私のなわばりなの！\n${username}ちゃんはどこから来たの？ なわばりは？`;
+  //   msg.send(message);
+  // });
 };
