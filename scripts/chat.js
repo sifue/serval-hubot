@@ -5,19 +5,23 @@ Goodcount.sync();
 
 module.exports = robot => {
   // :+1: が付くと名前付きで褒めてくれ、いいねの数をカウント
-  const sentSet = new Set();
+  const markSet = new Set(); // 一度いいねされたメッセージ (TS)
+  const sentSet = new Set(); // 送信済みいいね (TS:sendUserId)
+
   robot.react(res => {
-    const ts = res.message.item.ts;
+    const ts = res.message.item.ts; // いいねされたメッセージのID (TS)
+    const sendUserId = res.message.user.id;
+    const keyOfSend = ts + ':' + sendUserId; // 対象メッセージID(TS):いいね送った人のID で重複排除
     if (
       res.message.type == 'added' &&
       res.message.reaction == '+1' &&
-      !sentSet.has(ts)
+      !sentSet.has(keyOfSend) // その人が過去送ったことがなければインクリメント
     ) {
       const userId = res.message.item_user.id;
       const user = robot.brain.data.users[userId];
 
-      if (userId !== 'U7EADCN6N' && userId !== res.message.user.id) {
-        // ボット自身と自身へのいいねを除外
+      // ボット自身の発言へと自身へのいいねを除外
+      if (userId !== 'U7EADCN6N' && userId !== sendUserId) {
         Goodcount.findOrCreate({
           where: { userId: userId },
           defaults: {
@@ -36,7 +40,16 @@ module.exports = robot => {
               if (
                 newGoodcount == 1 ||
                 newGoodcount == 10 ||
+                newGoodcount == 20 ||
+                newGoodcount == 30 ||
+                newGoodcount == 40 ||
+                newGoodcount == 50 ||
+                newGoodcount == 60 ||
+                newGoodcount == 70 ||
+                newGoodcount == 80 ||
+                newGoodcount == 90 ||
                 newGoodcount == 100 ||
+                newGoodcount == 500 ||
                 newGoodcount == 1000 ||
                 newGoodcount == 10000
               ) {
@@ -44,18 +57,26 @@ module.exports = robot => {
                   `${displayName}ちゃん、すごーい！記念すべき ${newGoodcount} 回目のいいねだよ！おめでとー！`
                 );
               } else {
-                res.send(
-                  `${displayName}ちゃん、すごーい！ ${newGoodcount} 回目のいいねだよ！`
-                );
+                // 記念じゃない、かつ、マーク済みでなければ発言
+                if (!markSet.has(ts)) {
+                  res.send(
+                    `${displayName}ちゃん、すごーい！ ${newGoodcount} 回目のいいねだよ！`
+                  );
+                }
               }
             });
         });
       }
 
+      if (markSet.size > 100000) {
+        markSet.clear(); // 10万以上、すごーいしたら一旦クリア
+      }
+      markSet.add(ts);
+
       if (sentSet.size > 100000) {
         sentSet.clear(); // 10万以上、すごーいしたら一旦クリア
       }
-      sentSet.add(ts);
+      sentSet.add(keyOfSend);
     }
   });
 
