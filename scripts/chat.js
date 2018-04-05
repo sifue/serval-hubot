@@ -45,10 +45,6 @@ module.exports = robot => {
                 newGoodcount == 30 ||
                 newGoodcount == 40 ||
                 newGoodcount == 50 ||
-                newGoodcount == 60 ||
-                newGoodcount == 70 ||
-                newGoodcount == 80 ||
-                newGoodcount == 90 ||
                 newGoodcount == 100 ||
                 newGoodcount == 500 ||
                 newGoodcount == 1000 ||
