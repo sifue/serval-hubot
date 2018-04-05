@@ -75,6 +75,25 @@ module.exports = robot => {
     }
   });
 
+  // サーバル　いくつ　と聞くといいねの数を答えてくれる
+  robot.hear(/いくつ|いくつ？/i, msg => {
+    const username = msg.message.user.profile.display_name;
+    const user = msg.message.user;
+    Goodcount.findOrCreate({
+      where: { userId: user.id },
+      defaults: {
+        userId: user.id,
+        name: user.name,
+        realName: user.real_name,
+        displayName: user.profile.display_name,
+        goodcount: 0
+      }
+    }).spread((goodcount, isCreated) => {
+      const message = `${username}ちゃんのいいねは${goodcount.goodcount}こだよ`;
+      msg.send(message);
+    });
+  });
+
   // サーバルと呼びかけると答えてくれる
   robot.hear(/サーバル/i, msg => {
     const username = msg.message.user.profile.display_name;
