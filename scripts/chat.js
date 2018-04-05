@@ -39,6 +39,7 @@ module.exports = robot => {
               const displayName = user.slack.profile.display_name;
               if (
                 newGoodcount == 1 ||
+                newGoodcount == 5 ||
                 newGoodcount == 10 ||
                 newGoodcount == 20 ||
                 newGoodcount == 30 ||
@@ -56,13 +57,6 @@ module.exports = robot => {
                 res.send(
                   `${displayName}ちゃん、すごーい！記念すべき ${newGoodcount} 回目のいいねだよ！おめでとー！`
                 );
-              } else {
-                // 記念じゃない、かつ、マーク済みでなければ発言
-                if (!markSet.has(ts)) {
-                  res.send(
-                    `${displayName}ちゃん、すごーい！ ${newGoodcount} 回目のいいねだよ！`
-                  );
-                }
               }
 
               // インクリメント後のset更新処理
