@@ -39,15 +39,12 @@ module.exports = robot => {
               const displayName = user.slack.profile.display_name;
               if (
                 newGoodcount == 1 ||
+                newGoodcount == 5 ||
                 newGoodcount == 10 ||
                 newGoodcount == 20 ||
                 newGoodcount == 30 ||
                 newGoodcount == 40 ||
                 newGoodcount == 50 ||
-                newGoodcount == 60 ||
-                newGoodcount == 70 ||
-                newGoodcount == 80 ||
-                newGoodcount == 90 ||
                 newGoodcount == 100 ||
                 newGoodcount == 500 ||
                 newGoodcount == 1000 ||
@@ -56,13 +53,6 @@ module.exports = robot => {
                 res.send(
                   `${displayName}ちゃん、すごーい！記念すべき ${newGoodcount} 回目のいいねだよ！おめでとー！`
                 );
-              } else {
-                // 記念じゃない、かつ、マーク済みでなければ発言
-                if (!markSet.has(ts)) {
-                  res.send(
-                    `${displayName}ちゃん、すごーい！ ${newGoodcount} 回目のいいねだよ！`
-                  );
-                }
               }
 
               // インクリメント後のset更新処理
@@ -79,6 +69,25 @@ module.exports = robot => {
         });
       }
     }
+  });
+
+  // サーバル　いくつ　と聞くといいねの数を答えてくれる
+  robot.hear(/いくつ|いくつ？/i, msg => {
+    const username = msg.message.user.profile.display_name;
+    const user = msg.message.user;
+    Goodcount.findOrCreate({
+      where: { userId: user.id },
+      defaults: {
+        userId: user.id,
+        name: user.name,
+        realName: user.real_name,
+        displayName: user.profile.display_name,
+        goodcount: 0
+      }
+    }).spread((goodcount, isCreated) => {
+      const message = `${username}ちゃんのいいねは${goodcount.goodcount}こだよ`;
+      msg.send(message);
+    });
   });
 
   // サーバルと呼びかけると答えてくれる
