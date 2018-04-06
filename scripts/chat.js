@@ -72,7 +72,7 @@ module.exports = robot => {
     }).spread((goodcount, isCreated) => {
       const message = `${username}ちゃんのいいねは ${
         goodcount.goodcount
-      } こだよ`;
+      } こだよ！`;
       msg.send(message);
     });
   });
