@@ -5,13 +5,12 @@ Goodcount.sync();
 
 module.exports = robot => {
   // :+1: が付くと名前付きで褒めてくれ、いいねの数をカウント
-  const markSet = new Set(); // 一度いいねされたメッセージ (TS)
   const sentSet = new Set(); // 送信済みいいね (TS:sendUserId)
 
   robot.react(res => {
     const ts = res.message.item.ts; // いいねされたメッセージのID (TS)
     const sendUserId = res.message.user.id;
-    const keyOfSend = ts + ':' + sendUserId; // 対象メッセージID(TS):いいね送った人のID で重複排除
+    const keyOfSend = ts + ':' + sendUserId; // 対象メッセージID(TS):いいね送った人のID で重複カウント排除
     if (
       res.message.type == 'added' &&
       res.message.reaction == '+1' &&
@@ -38,28 +37,14 @@ module.exports = robot => {
               const newGoodcount = goodcount.goodcount;
               const displayName = user.slack.profile.display_name;
               if (
-                newGoodcount == 1 ||
-                newGoodcount == 5 ||
-                newGoodcount == 10 ||
-                newGoodcount == 20 ||
-                newGoodcount == 30 ||
-                newGoodcount == 40 ||
-                newGoodcount == 50 ||
-                newGoodcount == 100 ||
-                newGoodcount == 500 ||
-                newGoodcount == 1000 ||
-                newGoodcount == 10000
+                newGoodcount === 1 ||
+                newGoodcount === 5 ||
+                newGoodcount % 10 === 0
               ) {
                 res.send(
                   `${displayName}ちゃん、すごーい！記念すべき ${newGoodcount} 回目のいいねだよ！おめでとー！`
                 );
               }
-
-              // インクリメント後のset更新処理
-              if (markSet.size > 100000) {
-                markSet.clear(); // 10万以上、すごーいしたら一旦クリア
-              }
-              markSet.add(ts);
 
               if (sentSet.size > 100000) {
                 sentSet.clear(); // 10万以上、すごーいしたら一旦クリア
@@ -71,8 +56,8 @@ module.exports = robot => {
     }
   });
 
-  // サーバル　いくつ　と聞くといいねの数を答えてくれる
-  robot.hear(/いくつ|いくつ？/i, msg => {
+  // いいねいくつ？ と聞くといいねの数を答えてくれる
+  robot.hear(/いいねいくつ[\?？]/i, msg => {
     const username = msg.message.user.profile.display_name;
     const user = msg.message.user;
     Goodcount.findOrCreate({
@@ -85,7 +70,9 @@ module.exports = robot => {
         goodcount: 0
       }
     }).spread((goodcount, isCreated) => {
-      const message = `${username}ちゃんのいいねは${goodcount.goodcount}こだよ`;
+      const message = `${username}ちゃんのいいねは ${
+        goodcount.goodcount
+      } こだよ`;
       msg.send(message);
     });
   });
