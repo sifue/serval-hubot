@@ -35,7 +35,12 @@ module.exports = robot => {
             .increment('goodcount', { where: { userId: userId } })
             .then(() => {
               const newGoodcount = goodcount.goodcount;
-              const displayName = user.slack.profile.display_name;
+
+              let displayName = user.slack.profile.display_name;
+              if (!displayName) {
+                displayName = user.name;
+              }
+
               if (
                 newGoodcount === 1 ||
                 newGoodcount === 5 ||
@@ -58,8 +63,13 @@ module.exports = robot => {
 
   // いいねいくつ？ と聞くといいねの数を答えてくれる
   robot.hear(/いいねいくつ[\?？]/i, msg => {
-    const username = msg.message.user.profile.display_name;
     const user = msg.message.user;
+
+    let username = msg.message.user.profile.display_name;
+    if (!username) {
+      username = user.name;
+    }
+
     Goodcount.findOrCreate({
       where: { userId: user.id },
       defaults: {
