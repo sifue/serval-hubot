@@ -168,7 +168,6 @@ module.exports = robot => {
 
     if (channelId === 'C0VF1QBEK') { // #programming
       const message = `${username}ちゃんだね！ ここは #${room_name} だよ！` + 
-      ` この辺は私のなわばりなの！ ${username}ちゃんはどこから来たの？ ` +
        `このあたりのことなら https://n-highschool.slack.com/files/U0VKMCTEV/FHPNW4TEU/_programming_________________________ をみてね。`;
       msg.send(message);
     }
