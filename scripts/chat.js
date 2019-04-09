@@ -155,15 +155,22 @@ module.exports = robot => {
     msg.send(message);
   });
 
-  //新しいユーザーが増えるので一時的にコメントアウト
   //部屋に入ったユーザーへの案内
-  // robot.enter(msg => {
-  //   const username = msg.message.user.profile.display_name;
-  //   //チャンネルのIDからチャンネル名を取得
-  //   const room_name = robot.adapter.client.rtm.dataStore.getChannelGroupOrDMById(
-  //     msg.envelope.room
-  //   ).name;
-  //   const message = `がーいど がーいど#${room_name} がーいどー\nいらっしゃい！ ここは #${room_name} だよ！ この辺は私のなわばりなの！\n${username}ちゃんはどこから来たの？ なわばりは？`;
-  //   msg.send(message);
-  // });
+  robot.enter(msg => {
+    let username = msg.message.user.profile.display_name;
+    if (!username) username = msg.message.user.name;
+
+    //チャンネルのIDからチャンネル名を取得
+    const channelId = msg.envelope.room;
+    const room_name = robot.adapter.client.rtm.dataStore.getChannelGroupOrDMById(
+      channelId
+    ).name;
+
+    if (channelId === 'C0VF1QBEK') { // #programming
+      const message = `${username}ちゃんだね！ ここは #${room_name} だよ！` + 
+      ` この辺は私のなわばりなの！ ${username}ちゃんはどこから来たの？ ` +
+       `このあたりのことなら https://n-highschool.slack.com/files/U0VKMCTEV/FHPNW4TEU/_programming_________________________ をみてね。`;
+      msg.send(message);
+    }
+  });
 };
