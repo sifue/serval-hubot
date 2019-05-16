@@ -203,7 +203,9 @@ module.exports = robot => {
 
   //部屋に入ったユーザーへの入室メッセージを案内 %USERNAME% はユーザー名に、%ROOMNAME% は部屋名に置換
   robot.enter(msg => {
-    let username = msg.message.user.profile.display_name;
+    let username;
+    if (msg.message.user.profile)
+      usename = msg.message.user.profile.display_name;
     if (!username) username = msg.message.user.name;
 
     //チャンネルのIDからチャンネル名を取得
