@@ -11,6 +11,8 @@
     "*.{js,json,css,md}": ["prettier --write --single-quote=true", "git add"]
   },
   "dependencies": {
+    "@slack/client": "^4.6.0",
+    "cron": "^1.4.1",
     "hubot": "^2.19.0",
     "hubot-diagnostics": "0.0.2",
     "hubot-google-images": "^0.2.7",
@@ -24,6 +26,7 @@
     "hubot-scripts": "^2.17.2",
     "hubot-shipit": "^0.2.1",
     "hubot-slack": "^4.4.0",
+    "moment": "^2.22.2",
     "pg": "^6.1.0",
     "pg-hstore": "^2.3.2",
     "sequelize": "^3.25.0"
