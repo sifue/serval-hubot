@@ -78,9 +78,7 @@ module.exports = robot => {
 
       channels.forEach(c => {
         attachment.fields.push({
-          value: c.is_new
-            ? `#${c.name} ${c.name} (新規)`
-            : `#${c.name} ${c.name}`,
+          value: c.is_new ? `#${c.name} (新規)` : `#${c.name} `,
           short: true
         });
 
