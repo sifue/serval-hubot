@@ -1,5 +1,6 @@
 'use strict';
 
+const { WebClient } = require('@slack/client');
 const Goodcount = require('../models/goodcount');
 Goodcount.sync();
 
@@ -199,6 +200,29 @@ module.exports = robot => {
     joinMessages.delete(channelId);
     saveJoinMessages();
     msg.send(`入室メッセージを削除したよ。`);
+  });
+
+  // DMや@メンションで指定したチャンネルIDのユーザーの一覧を取得する
+  robot.respond(/ch-id-list> (.*)$/i, msg => {
+    const channelId = msg.match[1];
+    if (channelId) {
+      const token = process.env.HUBOT_SLACK_TOKEN;
+      const web = new WebClient(token);
+      web.channels.info({ channel: channelId }).then(res => {
+        if (res.channel) {
+          let message = `チャンネルID ${channelId} に所属するユーザーIDは以下の通り\n------\n`;
+          message += res.channel.members.join('\n');
+          message += `\n------\n`;
+          msg.send(message);
+        } else {
+          msg.send(
+            `チャンネルIDに関する情報が見つかりませんでした。 channelId: ${channelId}`
+          );
+        }
+      });
+    } else {
+      msg.send(`ch-id-list> の後に、チャンネルIDを指定してください。`);
+    }
   });
 
   //部屋に入ったユーザーへの入室メッセージを案内 %USERNAME% はユーザー名に、%ROOMNAME% は部屋名に置換
