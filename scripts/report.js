@@ -59,7 +59,6 @@ module.exports = robot => {
       const room = '#チャンネルマップ';
       const msg = { attachments: [] };
 
-      robot.send({ room }, '*前日からのチャンネル人数増減*');
       const attachment = { fields: [] };
       attachment.color = '#658CFF';
 
@@ -67,7 +66,7 @@ module.exports = robot => {
 
       attachment.fields.push(
         {
-          title: 'チャンネル',
+          title: '前日より変化したチャンネル',
           short: true
         },
         {
