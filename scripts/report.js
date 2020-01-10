@@ -47,6 +47,79 @@ module.exports = robot => {
       .catch(console.error);
   });
 
+  // times-ranking>コマンド: 現在のtimesがついているランキングを表示する
+  robot.hear(/^times-ranking>/i, async msg => {
+    let channels = await loadTodayChannelList();
+    if (!channels) channels = await loadYesterdayChannelList();
+    let rankedChannels = channels
+      .filter(c => c.name.includes('times'))
+      .sort((a, b) => b.num_members - a.num_members)
+      .slice(0, 100)
+      .map((c, i) => {
+        c.rank = i + 1;
+        return c;
+      });
+
+    const content = { attachments: [] };
+    const attachment = { fields: [] };
+    attachment.color = '#658CFF';
+
+    content.attachments.push(attachment);
+
+    attachment.fields.push(
+      {
+        title: 'timesランキング',
+        short: true
+      },
+      {
+        title: 'チャンネル名',
+        short: true
+      }
+    );
+
+    rankedChannels.forEach(c => {
+      attachment.fields.push({
+        value: `第${c.rank}位 (${c.num_members}人)`,
+        short: true
+      });
+      attachment.fields.push({
+        value: `#${c.name}`,
+        short: true
+      });
+    });
+
+    msg.send(content);
+
+    robot.logger.info('現在のtimesランキングを投稿しました.');
+  });
+
+  // times-rank> (チャンネル名) コマンド: 現在のtimesの順位を表示する
+  robot.hear(/^times-rank> (.+)/i, async msg => {
+    let nameStr = msg.match[1];
+    robot.logger.info(`${nameStr}のランキングを調べます。`);
+    nameStr = nameStr.replace('#', '').trim();
+    let channels = await loadTodayChannelList();
+    if (!channels) channels = await loadYesterdayChannelList();
+    let channel = channels
+      .filter(c => c.name.includes('times'))
+      .sort((a, b) => b.num_members - a.num_members)
+      .map((c, i) => {
+        c.rank = i + 1;
+        return c;
+      })
+      .filter(c => c.name === nameStr)[0];
+
+    if (channel) {
+      msg.send(
+        `#${channel.name} はtimesチャンネルの中で第${channel.rank}位です。 (参加者数${channel.num_members}人)`
+      );
+    } else {
+      msg.send(`#${nameStr} は見つかりませんでした。`);
+    }
+
+    robot.logger.info(`#${nameStr} のtimesランキングを調べました。`);
+  });
+
   /**
    * 前日と今日のチャンネル人数のDiffを作成するしてレポートを送る
    * - チャンネル
