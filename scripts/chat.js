@@ -67,11 +67,7 @@ module.exports = robot => {
                 displayName = user.name;
               }
 
-              if (
-                newGoodcount === 1 ||
-                newGoodcount === 5 ||
-                newGoodcount % 10 === 0
-              ) {
+              if (newGoodcount === 5 || newGoodcount % 10 === 0) {
                 res.send(
                   `${displayName}ちゃん、すごーい！記念すべき ${newGoodcount} 回目のいいねだよ！おめでとー！`
                 );
@@ -106,9 +102,7 @@ module.exports = robot => {
         goodcount: 0
       }
     }).spread((goodcount, isCreated) => {
-      const message = `${username}ちゃんのいいねは ${
-        goodcount.goodcount
-      } こだよ！`;
+      const message = `${username}ちゃんのいいねは ${goodcount.goodcount} こだよ！`;
       msg.send(message);
     });
   });
