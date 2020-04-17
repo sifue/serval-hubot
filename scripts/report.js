@@ -200,6 +200,11 @@ module.exports = robot => {
             diffs.push(c);
           }
         });
+
+        // 増減数の降順でソート
+        diffs.sort((a, b) => {
+          return b.diff_num_members - a.diff_num_members;
+        });
         return diffs;
       });
     });
