@@ -36,7 +36,7 @@ module.exports = robot => {
   robot.react(res => {
     const ts = res.message.item.ts; // いいねされたメッセージのID (TS)
     const sendUserId = res.message.user.id;
-    const keyOfSend = ts + ':' + sendUserId; // 対象メッセージID(TS):いいね送った人のID で重複カウント排除
+    const keyOfSend = res.room + ':' + ts + ':' + sendUserId; // 対象メッセージID(room:TS):いいね送った人のID で重複カウント排除
     if (
       res.message.type == 'added' &&
       res.message.reaction == '+1' &&
@@ -61,15 +61,9 @@ module.exports = robot => {
             .increment('goodcount', { where: { userId: userId } })
             .then(() => {
               const newGoodcount = goodcount.goodcount;
-
-              let displayName = user.slack ? user.slack.profile.display_name : user.name;
-              if (!displayName) {
-                displayName = user.name;
-              }
-
               if (newGoodcount === 5 || newGoodcount % 10 === 0) {
                 res.send(
-                  `${displayName}ちゃん、すごーい！記念すべき ${newGoodcount} 回目のいいねだよ！おめでとー！`
+                  `<@${userId}>ちゃん、すごーい！記念すべき ${newGoodcount} 回目のいいねだよ！おめでとー！`
                 );
               }
 
