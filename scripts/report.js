@@ -2,6 +2,9 @@
 
 const moment = require('moment');
 const { WebClient } = require('@slack/client');
+const token = process.env.HUBOT_SLACK_TOKEN;
+const web = new WebClient(token);
+
 const fs = require('fs');
 const CHANNELS_LOG = 'channels_log';
 const UPLOAD_FOLDER = './uploads/';
@@ -248,8 +251,6 @@ module.exports = robot => {
   function fetchChannelList() {
     const filename =
       CHANNELS_LOG + '/' + moment().format('YYYY-MM-DD') + '.json';
-    const token = process.env.HUBOT_SLACK_TOKEN;
-    const web = new WebClient(token);
 
     return web.channels.list().then(res => {
       return new Promise((resolve, reject) => {
