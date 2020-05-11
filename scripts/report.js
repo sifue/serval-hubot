@@ -146,7 +146,7 @@ module.exports = robot => {
       if (!fs.existsSync(UPLOAD_FOLDER)) {
         fs.mkdirSync(UPLOAD_FOLDER);
       }
-      const titlefilename = moment(new Date()).format('YYYY-MM-DD') + '.csv'; 
+      const titlefilename = moment(new Date()).format('YYYY-MM-DD') + 'の前日より変化したチャンネル.csv'; 
       const csvFile =
         UPLOAD_FOLDER + titlefilename;
       fs.writeFileSync(csvFile, message);
