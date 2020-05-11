@@ -4,6 +4,7 @@ const moment = require('moment');
 const { WebClient } = require('@slack/client');
 const fs = require('fs');
 const CHANNELS_LOG = 'channels_log';
+const UPLOAD_FOLDER = './uploads/';
 
 // チャンネルリストログの保存フォルダ作成
 fs.mkdir(CHANNELS_LOG, err => {
@@ -121,7 +122,7 @@ module.exports = robot => {
   });
 
   /**
-   * 前日と今日のチャンネル人数のDiffを作成するしてレポートを送る
+   * 前日と今日のチャンネル人数のDiffを作成するしてレポートをファイルとして送る
    * - チャンネル
    * - 増減 (現在値)
    * @return Promise.<Object[]>
@@ -130,42 +131,34 @@ module.exports = robot => {
     return createNumMembersDiff().then(channels => {
       // const room = '#sifuetest3';
       const room = '#チャンネルマップ';
-      const msg = { attachments: [] };
-
-      const attachment = { fields: [] };
-      attachment.color = '#658CFF';
-
-      msg.attachments.push(attachment);
-
-      attachment.fields.push(
-        {
-          title: '前日より変化したチャンネル',
-          short: true
-        },
-        {
-          title: '増減 (現在値)',
-          short: true
-        }
-      );
+      let message = '前日より変化したチャンネル\t増減 (現在値)';
 
       channels.forEach(c => {
-        attachment.fields.push({
-          //value: c.is_new ? `#${c.name} (新規)` : `#${c.name} `,
-          value: c.is_new ? `${c.name} (新規)` : `${c.name} `,
-          short: true
-        });
-
-        attachment.fields.push({
-          value:
-            (c.diff_num_members > 0
-              ? `+${c.diff_num_members}`
-              : `${c.diff_num_members}`) + ` (${c.num_members})`,
-          short: true
-        });
+        message += '\n';
+        message += c.is_new ? `${c.name} (新規)\t` : `${c.name} \t`;
+        message += (c.diff_num_members > 0 ? `+${c.diff_num_members}`: `${c.diff_num_members}`) + ` (${c.num_members})`
       });
 
-      robot.send({ room }, msg);
-      return channels;
+      // アップロードフォルダ作成
+      if (!fs.existsSync(UPLOAD_FOLDER)) {
+        fs.mkdirSync(UPLOAD_FOLDER);
+      }
+      const yesterday = new Date(new Date().getTime() - 1000 * 60 * 60 * 24);
+      const titlefilename = moment(yesterday).format('YYYY-MM-DD') + '.csv'; 
+      const csvFile =
+        UPLOAD_FOLDER + titlefilename;
+      fs.writeFileSync(csvFile, message);
+
+      const option = {
+        channels: room,
+        file: fs.createReadStream(csvFile),
+        filename: titlefilename
+      };
+
+      return web.files.upload(option).then(() =>  {
+        // fs.unlinkSync(csvFile);
+        return channels;
+      });
     });
   }
 
