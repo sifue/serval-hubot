@@ -51,9 +51,9 @@ module.exports = robot => {
           where: { userId: userId },
           defaults: {
             userId: userId,
-            name: user.name,
-            realName: user.real_name,
-            displayName: user.slack.profile.display_name,
+            name: user ? user.name : '',
+            realName: user ? user.real_name : '',
+            displayName: user ? user.slack.profile.display_name : '',
             goodcount: 0
           }
         }).spread((goodcount, isCreated) => {
