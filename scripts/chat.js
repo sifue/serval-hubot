@@ -62,7 +62,7 @@ module.exports = robot => {
             .then(() => {
               const newGoodcount = goodcount.goodcount;
 
-              let displayName = user.slack.profile.display_name;
+              let displayName = user.slack ? user.slack.profile.display_name : user.name;
               if (!displayName) {
                 displayName = user.name;
               }
