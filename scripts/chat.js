@@ -43,7 +43,7 @@ module.exports = robot => {
       !sentSet.has(keyOfSend) // その人が過去送ったことがなければインクリメント
     ) {
       const userId = res.message.item_user.id;
-      const user = robot.brain.data.users[userId];
+      const user = robot.brain.data.users[userId]; // ユーザー規模が大きすぎると起動時brainのフェッチに失敗するようになるので無いこともある前提
 
       // ボット自身の発言へと自身へのいいねを除外
       if (userId !== 'U7EADCN6N' && userId !== sendUserId) {
@@ -153,17 +153,6 @@ module.exports = robot => {
       'え、なになにー！',
       `${username}ちゃん！`,
       'わかった！よーし、やるぞー！'
-    ];
-    const message = messages[Math.floor(Math.random() * messages.length)];
-    msg.send(message);
-  });
-
-  //ネガティブなレスをすると慰めてくれる
-  robot.hear(/悲しい|すみません|すいません|ごめんなさい|申し訳ない/i, msg => {
-    const username = msg.message.user.profile.display_name;
-    const messages = [
-      'へーきへーき!　フレンズによって得意なこと違うから!',
-      `${username}ちゃんはすっごい頑張り屋だから、きっとすぐ何が得意か分かるよ！`
     ];
     const message = messages[Math.floor(Math.random() * messages.length)];
     msg.send(message);
