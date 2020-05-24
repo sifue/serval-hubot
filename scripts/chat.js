@@ -61,7 +61,11 @@ module.exports = robot => {
             .increment('goodcount', { where: { userId: userId } })
             .then(() => {
               const newGoodcount = goodcount.goodcount;
-              if (newGoodcount === 10 || newGoodcount % 100 === 0) {
+              if (
+                newGoodcount === 10 ||
+                newGoodcount === 50 ||
+                newGoodcount % 100 === 0
+              ) {
                 res.send(
                   `<@${userId}>ちゃん、すごーい！記念すべき ${newGoodcount} 回目のいいねだよ！おめでとー！`
                 );
