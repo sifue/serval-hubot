@@ -133,22 +133,26 @@ module.exports = robot => {
   function sendDailyReport(robot) {
     return createNumMembersDiff().then(channels => {
       // const room = '#sifuetest3';
-      const room = '#チャンネルマップ';
+      const room = '#なんでも宣伝チャンネル';
       let message = '前日より変化したチャンネル\t増減 (現在値)';
 
       channels.forEach(c => {
         message += '\n';
         message += c.is_new ? `${c.name} (新規)\t` : `${c.name} \t`;
-        message += (c.diff_num_members > 0 ? `+${c.diff_num_members}`: `${c.diff_num_members}`) + ` (${c.num_members})`
+        message +=
+          (c.diff_num_members > 0
+            ? `+${c.diff_num_members}`
+            : `${c.diff_num_members}`) + ` (${c.num_members})`;
       });
 
       // アップロードフォルダ作成
       if (!fs.existsSync(UPLOAD_FOLDER)) {
         fs.mkdirSync(UPLOAD_FOLDER);
       }
-      const titlefilename = moment(new Date()).format('YYYY-MM-DD') + 'の前日より変化したチャンネル.csv'; 
-      const csvFile =
-        UPLOAD_FOLDER + titlefilename;
+      const titlefilename =
+        moment(new Date()).format('YYYY-MM-DD') +
+        'の前日より変化したチャンネル.csv';
+      const csvFile = UPLOAD_FOLDER + titlefilename;
       fs.writeFileSync(csvFile, message);
 
       const option = {
@@ -157,7 +161,7 @@ module.exports = robot => {
         filename: titlefilename
       };
 
-      return web.files.upload(option).then(() =>  {
+      return web.files.upload(option).then(() => {
         // fs.unlinkSync(csvFile);
         return channels;
       });
