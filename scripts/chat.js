@@ -126,6 +126,16 @@ module.exports = robot => {
     msg.send(`入室メッセージを削除したよ。`);
   });
 
+  // 発言したチャンネルの入室メッセージの設定を確認する
+  robot.hear(/^入室メッセージを見せて/i, msg => {
+    const channelId = msg.envelope.room;
+    for (let [key, value] of joinMessages) {
+      if (channelId === key) {
+        msg.send(`現在登録されている入室メッセージは「${value}」だよ。`);
+      }
+    }
+  });
+
   // DMや@メンションで指定したチャンネルIDのユーザーの一覧を取得する
   robot.respond(/ch-id-list> (.*)$/i, msg => {
     const channelId = msg.match[1];
