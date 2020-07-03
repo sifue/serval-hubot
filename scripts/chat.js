@@ -33,7 +33,7 @@ module.exports = robot => {
   // :+1: が付くと名前付きで褒めてくれ、いいねの数をカウント
   const sentSet = new Set(); // 送信済みいいね (room:TS:sendUserId)
 
-  robot.react(res => {
+  /*robot.react(res => {
     const ts = res.message.item.ts; // いいねされたメッセージのID (room:TS)
     const sendUserId = res.message.user.id;
     const keyOfSend = res.message.room + ':' + ts + ':' + sendUserId; // 対象メッセージID(room:TS):いいね送った人のID で重複カウント排除
@@ -79,7 +79,7 @@ module.exports = robot => {
         });
       }
     }
-  });
+  });*/
 
   // いいねいくつ？ と聞くといいねの数を答えてくれる
   robot.hear(/いいねいくつ[\?？]/i, msg => {
@@ -124,6 +124,16 @@ module.exports = robot => {
     joinMessages.delete(channelId);
     saveJoinMessages();
     msg.send(`入室メッセージを削除したよ。`);
+  });
+
+  // 発言したチャンネルの入室メッセージの設定を確認する
+  robot.hear(/^入室メッセージを見せて/i, msg => {
+    const channelId = msg.envelope.room;
+    for (let [key, value] of joinMessages) {
+      if (channelId === key) {
+        msg.send(`現在登録されている入室メッセージは「${value}」だよ。`);
+      }
+    }
   });
 
   // DMや@メンションで指定したチャンネルIDのユーザーの一覧を取得する
