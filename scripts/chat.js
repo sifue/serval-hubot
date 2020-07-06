@@ -132,7 +132,7 @@ module.exports = robot => {
     for (let [key, value] of joinMessages) {
       if (channelId === key) {
         let message = value.replace(/\\n/g, '\n');
-        msg.send(`現在登録されている入室メッセージは「${message}」だよ。`);
+        msg.send(`現在登録されている入室メッセージは\n\n${message}\n\nだよ。`);
       }
     }
   });
