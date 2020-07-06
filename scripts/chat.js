@@ -131,7 +131,8 @@ module.exports = robot => {
     const channelId = msg.envelope.room;
     for (let [key, value] of joinMessages) {
       if (channelId === key) {
-        msg.send(`現在登録されている入室メッセージは「${value}」だよ。`);
+        let message = value.replace(/\\n/g, '\n');
+        msg.send(`現在登録されている入室メッセージは「${message}」だよ。`);
       }
     }
   });
@@ -159,7 +160,7 @@ module.exports = robot => {
     }
   });
 
-  //部屋に入ったユーザーへの入室メッセージを案内 %USERNAME% はユーザー名に、%ROOMNAME% は部屋名に置換
+  //部屋に入ったユーザーへの入室メッセージを案内 %USERNAME% はユーザー名に、%ROOMNAME% は部屋名に、\\n は改行コード(\n)に置換
   robot.enter(msg => {
     let username;
     if (msg.message.user.profile)
@@ -176,7 +177,8 @@ module.exports = robot => {
       if (channelId === key) {
         let message = value
           .replace('%USERNAME%', username)
-          .replace('%ROOMNAME%', '#' + roomname);
+          .replace('%ROOMNAME%', '#' + roomname)
+          .replace(/\\n/g, '\n');
         msg.send(message);
       }
     }
