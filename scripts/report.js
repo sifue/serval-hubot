@@ -1,7 +1,7 @@
 'use strict';
 
 const moment = require('moment');
-const { WebClient } = require('@slack/client');
+const { WebClient } = require('@slack/web-api');
 const token = process.env.HUBOT_SLACK_TOKEN;
 const web = new WebClient(token);
 
@@ -132,7 +132,7 @@ module.exports = robot => {
    */
   function sendDailyReport(robot) {
     return createNumMembersDiff().then(channels => {
-      // const room = '#sifuetest3';
+      // const room = '#sifue_bot_dev';
       const room = '#なんでも宣伝チャンネル';
       let message = '前日より変化したチャンネル\t増減 (現在値)';
 
@@ -255,7 +255,7 @@ module.exports = robot => {
     const filename =
       CHANNELS_LOG + '/' + moment().format('YYYY-MM-DD') + '.json';
 
-    return web.channels.list().then(res => {
+    return fetchChannelListRec().then(res => {
       return new Promise((resolve, reject) => {
         fs.writeFile(filename, JSON.stringify(res.channels), err => {
           if (err) {
@@ -266,5 +266,35 @@ module.exports = robot => {
         });
       });
     });
+  }
+
+  /**
+   * チャンネル一覧をSlackより取得し、cursorを使ったものをまとめて結合する
+   * @return Promise.<Object[]>
+   */
+  async function fetchChannelListRec() {
+    let cursor;
+    let channels = [];
+
+    do {
+      const res = await web.conversations.list({
+        cursor: cursor,
+        exclude_archived: true,
+        limit: 1000,
+        types: 'public_channel'
+      });
+
+      if (res.ok && res.response_metadata) {
+        cursor = res.response_metadata.next_cursor;
+        channels = channels.concat(res.channels);
+      } else {
+        console.log(
+          '[ERROR] 正しくconversations.list APIが利用できませんでした。 res:'
+        );
+        console.log(res);
+      }
+    } while (cursor);
+
+    return { channels };
   }
 };
