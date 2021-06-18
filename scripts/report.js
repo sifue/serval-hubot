@@ -87,7 +87,7 @@ module.exports = robot => {
         short: true
       });
       attachment.fields.push({
-        value: `#${c.name}`,
+        value: `<#${c.id}>`,
         short: true
       });
     });
@@ -95,6 +95,7 @@ module.exports = robot => {
     msg.send(content);
 
     robot.logger.info('現在のtimesランキングを投稿しました.');
+    robot.logger.info(content);
   });
 
   // times-rank> (チャンネル名) コマンド: 現在のtimesの順位を表示する
