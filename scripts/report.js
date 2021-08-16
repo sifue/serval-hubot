@@ -64,6 +64,17 @@ module.exports = robot => {
         return c;
       });
 
+    // 同数と同順位とする
+    let pre_num_members = -1;
+    let pre_rank = -1;
+    for (let c of rankedChannels) {
+      if (c.num_members === pre_num_members) {
+        c.rank = pre_rank;
+      }
+      pre_num_members = c.num_members;
+      pre_rank = c.rank;
+    }
+
     const content = { attachments: [] };
     const attachment = { fields: [] };
     attachment.color = '#658CFF';
@@ -105,15 +116,26 @@ module.exports = robot => {
     nameStr = nameStr.replace('#', '').trim();
     let channels = await loadTodayChannelList();
     if (!channels) channels = await loadYesterdayChannelList();
-    let channel = channels
+    channels = channels
       .filter(c => c.name.includes('times'))
       .sort((a, b) => b.num_members - a.num_members)
       .map((c, i) => {
         c.rank = i + 1;
         return c;
-      })
-      .filter(c => c.name === nameStr)[0];
+      });
 
+    // 同数と同順位とする
+    let pre_num_members = -1;
+    let pre_rank = -1;
+    for (let c of channels) {
+      if (c.num_members === pre_num_members) {
+        c.rank = pre_rank;
+      }
+      pre_num_members = c.num_members;
+      pre_rank = c.rank;
+    }
+
+    let channel = channels.filter(c => c.name === nameStr)[0];
     if (channel) {
       msg.send(
         `#${channel.name} はtimesチャンネルの中で第${channel.rank}位です。 (参加者数${channel.num_members}人)`
