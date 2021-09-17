@@ -22,7 +22,7 @@
     "moment": "^2.22.2",
     "pg": "^6.1.0",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^3.25.0"
+    "sequelize": "^5.15.1"
   },
   "engines": {
     "node": "10.16.3"
