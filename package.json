@@ -16,7 +16,7 @@
   "dependencies": {
     "@slack/web-api": "^5.11.0",
     "cron": "^1.4.1",
-    "hubot": "^2.19.0",
+    "hubot": "^3.3.2",
     "hubot-diagnostics": "0.0.2",
     "hubot-slack": "^4.4.0",
     "moment": "^2.22.2",
